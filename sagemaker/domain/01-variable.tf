@@ -14,15 +14,20 @@ variable "sub_id" {
   type        = map(string)
 }
 
+variable "scg_id" {
+  description = "The id of the SecurityGroups"
+  type        = map(string)
+}
+
 variable "domain" {
   type = object({
     domain_name             = string
     auth_mode               = optional(string, "IAM")
-    app_network_access_type = optional(string, "PublicInternetOnly")
-    vpc_identifier          = optional(string, null)
-    subnet_identifiers      = optional(list(string), [])
     ## app_network_access_type option : PublicInternetOnly, VpcOnly
-    execution_role = string
+    app_network_access_type = optional(string, "PublicInternetOnly")
+    vpc_identifier          = string
+    subnet_identifiers      = list(string)
     ## execution_role input date type : arn
+    execution_role          = string
   })
 }

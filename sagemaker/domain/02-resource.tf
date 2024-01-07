@@ -3,19 +3,20 @@ locals {
 }
 
 #### AWS Sagemaker Domain #######################################################################################################
-resource "aws_sagemaker_domain" "example" {
-  for_each                = { for domain in tolist(var.domain) : domain.domain_name => domain }
+resource "aws_sagemaker_domain" "default" {
+  # for_each                = { for domain in var.domain : domain.domain_name => var.domain }
+  for_each                = toset([var.domain.domain_name])
   domain_name             = each.key
-  auth_mode               = each.value.auth_mode
-  app_network_access_type = each.value.app_network_access_type
-  vpc_id                  = each.value.app_network_access_type == "VpcOnly" ? var.vpc_id[each.value.vpc_identifier] : null
-  subnet_ids              = each.value.app_network_access_type == "VpcOnly" ? [for sub_identifier in each.value.subnet_identifier : var.sub_id[sub_identifier]] : null
+  auth_mode               = var.domain.auth_mode
+  app_network_access_type = var.domain.app_network_access_type
+  vpc_id                  = var.vpc_id[var.domain.vpc_identifier]
+  subnet_ids              = [for sub_identifier in var.domain.subnet_identifiers : var.sub_id[sub_identifier]]
   # app_security_group_management
   # domain_settings
   # kms_key_id
   # retention_policy
   default_user_settings {
-    execution_role = each.value.execution_role
+    execution_role = var.domain.execution_role
     # security_groups = 
     sharing_settings {
 
