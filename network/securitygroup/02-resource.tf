@@ -2,7 +2,7 @@ data "aws_region" "current" {}
 
 ### AWS Security Group
 resource "aws_security_group" "default" {
-  for_each    = { for scg in local.SecurityGroup_Optimize : scg.identifier => scg if length(local.SecurityGroup_Optimize) != 0 }
+  for_each    = { for scg in local.SecurityGroup_Optimized : scg.identifier => scg if length(local.SecurityGroup_Optimized) != 0 }
   vpc_id      = var.vpc_id[each.value.vpc_identifier]
   name        = join("-", ["scg", local.middle_name, each.value.name_prefix])
   description = each.value.description
@@ -18,14 +18,13 @@ resource "aws_security_group" "default" {
   }
 }
 
-
 locals {
   scg_ids                    = { for key, scg in aws_security_group.default : key => scg.id if length(aws_security_group.default) != 0 }
-  create_security_group_rule = length(var.security_group_rule) != 0 ? true : false
+  create_security_group_rule = length(var.securitygroup_rules) != 0 ? true : false
 }
 
 resource "aws_security_group_rule" "sgr_cidr_blocks" {
-  for_each = { for sgr in var.security_group_rule : "${sgr.securitygroup}_${sgr.portrange}_${sgr.source}" => sgr
+  for_each = { for sgr in var.securitygroup_rules : "${sgr.securitygroup}_${sgr.portrange}_${sgr.source}" => sgr
   if alltrue([local.create_security_group_rule, can(regex("[0-9]+.[0-9]+.[0-9]+.[0-9]+/[0-9]+", sgr.source))]) }
   security_group_id        = local.scg_ids[each.value.securitygroup]
   type                     = each.value.type
@@ -40,7 +39,7 @@ resource "aws_security_group_rule" "sgr_cidr_blocks" {
 }
 
 resource "aws_security_group_rule" "sgr_source_security_group_id" {
-  for_each = { for sgr in var.security_group_rule : "${sgr.securitygroup}_${sgr.portrange}_${sgr.source}" => sgr
+  for_each = { for sgr in var.securitygroup_rules : "${sgr.securitygroup}_${sgr.portrange}_${sgr.source}" => sgr
   if alltrue([local.create_security_group_rule, can(regex("[0-9a-zA-Z]+-", sgr.source))]) }
   security_group_id        = local.scg_ids[each.value.securitygroup]
   type                     = each.value.type

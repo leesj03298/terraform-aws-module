@@ -1,6 +1,6 @@
 #### Share Variable 
-variable "Share_Middle_Name" {
-  description = "Name Tags Middle Name(*Ex : join('-', ['vpc', var.Share_Middle_Name, each.value.name_prefix]))"
+variable "middle_name" {
+  description = "Name Tags Middle Name(*Ex : join('-', ['vpc', var.middle_name, each.value.name_prefix]))"
   type        = string
 }
 
@@ -9,10 +9,10 @@ variable "vpc_id" {
   type        = map(string)
 }
 
-variable "security_groups" {
+variable "securitygroups" {
   type = list(object({
     vpc_identifier = string
-    securitygroups = optional(list(object({
+    scgs = optional(list(object({
       identifier  = optional(string, null)
       name_prefix = optional(string, null)
       description = optional(string, "Security Group")
@@ -20,12 +20,12 @@ variable "security_groups" {
     })), null)
   }))
   validation {
-    condition     = alltrue([for scg in var.security_groups : scg.vpc_identifier != null])
+    condition     = alltrue([for scg in var.securitygroups : scg.vpc_identifier != null])
     error_message = "vpc_identifier is a required field."
   }
 }
 
-variable "security_group_rule" {
+variable "securitygroup_rules" {
   type = list(object({
     securitygroup = string
     protocol      = string
