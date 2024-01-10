@@ -41,8 +41,8 @@ variable "master_username" {
 variable "master_password" {
   description = "Password for the master DB user."
   type        = string
-  default     = "test0574"
-  sensitive   = true
+  default = "Test0574"
+  sensitive = true
 }
 
 variable "port" {
