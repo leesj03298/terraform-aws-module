@@ -41,8 +41,8 @@ variable "master_username" {
 variable "master_password" {
   description = "Password for the master DB user."
   type        = string
-  default = "Test0574"
-  sensitive = true
+  default     = "Test0574"
+  sensitive   = true
 }
 
 variable "port" {
@@ -75,6 +75,11 @@ variable "node_type" {
   default     = "dc2.large"
 }
 
+variable "number_of_nodes" {
+  type    = number
+  default = 1
+}
+
 variable "cluster_type" {
   description = "The cluster type to use. Either single-node or multi-node."
   type        = string
@@ -87,3 +92,7 @@ variable "skip_final_snapshot" {
   default     = true
 }
 
+variable "publicly_accessible" {
+  type    = bool
+  default = true
+}
