@@ -4,16 +4,6 @@ variable "middle_name" {
   type        = string
 }
 
-variable "vpc_id" {
-  description = "The id of the VPC"
-  type        = map(string)
-}
-
-variable "sub_id" {
-  description = "The id of the Subnet"
-  type        = map(string)
-}
-
 variable "scg_id" {
   description = "The id of the SecurityGroups"
   type        = map(string)
