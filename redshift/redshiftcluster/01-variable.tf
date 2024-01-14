@@ -82,6 +82,11 @@ variable "skip_final_snapshot" {
   default     = true
 }
 
+variable "enhanced_vpc_routing" {
+  type    = bool
+  default = false
+}
+
 variable "publicly_accessible" {
   type    = bool
   default = true
