@@ -21,6 +21,18 @@ variable "ngw_ids" {
   default     = {}
 }
 
+variable "tgw_ids" {
+  description = "The id of the NAT Gateway"
+  type        = map(string)
+  default     = {}
+}
+
+variable "pcx_ids" {
+  description = "The id of the NAT Gateway"
+  type        = map(string)
+  default     = {}
+}
+
 variable "routetable_rules" {
   type = list(object({
     route_table_identifier = optional(string, null)

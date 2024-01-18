@@ -14,7 +14,7 @@ resource "aws_route" "default" {
   nat_gateway_id = try(var.ngw_ids[each.value.target], null)
   # local_gateway_id = 
   # network_interface_id = 
-  # transit_gateway_id = 
-  # vpc_endpoint_id  = 
-  # vpc_peering_connection_id =
+  transit_gateway_id = try(var.tgw_ids[each.value.target], null)
+  # vpc_endpoint_id  =
+  vpc_peering_connection_id = try(var.pcx_ids[each.value.target], null)
 }
