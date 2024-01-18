@@ -22,13 +22,25 @@ variable "ngw_ids" {
 }
 
 variable "tgw_ids" {
-  description = "The id of the NAT Gateway"
+  description = "The id of the Transit Gateway"
   type        = map(string)
   default     = {}
 }
 
 variable "pcx_ids" {
-  description = "The id of the NAT Gateway"
+  description = "The id of the VPC Peering Connection"
+  type        = map(string)
+  default     = {}
+}
+
+variable "cagw_ids" {
+  description = "The id of the Carrier Gateway "
+  type        = map(string)
+  default     = {}
+}
+
+variable "eni_ids" {
+  description = "The id of the Carrier Gateway "
   type        = map(string)
   default     = {}
 }
