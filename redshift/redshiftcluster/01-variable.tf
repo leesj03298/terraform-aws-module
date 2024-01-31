@@ -91,3 +91,13 @@ variable "publicly_accessible" {
   type    = bool
   default = true
 }
+
+variable "availability_zone_relocation_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "availability_zone" {
+  type    = string
+  default = null
+}

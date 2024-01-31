@@ -18,6 +18,9 @@ resource "aws_redshift_cluster" "default" {
   publicly_accessible          = var.publicly_accessible
   vpc_security_group_ids       = [for scg_identifier in var.vpc_security_group_identifiers : var.scg_id[scg_identifier]]
   skip_final_snapshot          = var.skip_final_snapshot
+  availability_zone_relocation_enabled = var.availability_zone_relocation_enabled
+  encrypted = true
+  availability_zone  = alltrue([var.availability_zone_relocation_enabled, var.availability_zone  != null]) ? var.publicly_accessible : null
   timeouts {
     create = "10m"
     update = "20m"
