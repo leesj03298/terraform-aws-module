@@ -101,3 +101,13 @@ variable "availability_zone" {
   type    = string
   default = null
 }
+
+variable "default_iam_role_name" {
+  type    = string
+  default = null
+}
+
+variable "iam_role_names" {
+  type    = list(string)
+  default = []
+}
