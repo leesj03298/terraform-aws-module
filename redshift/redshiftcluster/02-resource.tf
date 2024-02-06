@@ -22,7 +22,7 @@ resource "aws_redshift_cluster" "default" {
   master_password                      = var.master_password
   node_type                            = var.node_type
   number_of_nodes                      = var.number_of_nodes
-  cluster_type                         = var.cluster_type
+  cluster_type                         = var.number_of_nodes > 1 ? "multi-node" : "single-node"
   cluster_subnet_group_name            = var.cluster_subnet_group_name
   cluster_parameter_group_name         = var.cluster_parameter_group_name
   publicly_accessible                  = var.publicly_accessible
@@ -32,8 +32,8 @@ resource "aws_redshift_cluster" "default" {
   encrypted                            = true
   availability_zone                    = alltrue([var.availability_zone_relocation_enabled, var.availability_zone != null]) ? var.publicly_accessible : null
   default_iam_role_arn                 = try(data.aws_iam_role.default_role[0].arn, null)
-  iam_roles                            = [for key in var.iam_role_names : data.aws_iam_role.roles[key].arn]
-
+  iam_roles                            = [for key in var.iam_role_names : data.aws_iam_role.roles[key].arn] 
+  
   timeouts {
     create = "10m"
     update = "20m"
