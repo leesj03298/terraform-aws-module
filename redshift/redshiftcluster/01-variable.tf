@@ -68,6 +68,10 @@ variable "node_type" {
 variable "number_of_nodes" {
   type    = number
   default = 1
+  validation {
+    condition = var.number_of_nodes > 0
+    error_message = "Number of nodes must be at least 1."
+  }
 }
 
 variable "cluster_type" {

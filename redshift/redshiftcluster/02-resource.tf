@@ -4,7 +4,7 @@ locals {
 }
 
 data "aws_iam_role" "default_role" {
-  count    = var.default_iam_role_name != null ? 1 : 0
+  count    = var.default_iam_role_name != null && var.default_iam_role_name != "" ? 1 : 0
   name     = var.default_iam_role_name
 }
 
@@ -29,11 +29,11 @@ resource "aws_redshift_cluster" "default" {
   vpc_security_group_ids               = [for scg_identifier in var.vpc_security_group_identifiers : var.scg_id[scg_identifier]]
   skip_final_snapshot                  = var.skip_final_snapshot
   availability_zone_relocation_enabled = var.availability_zone_relocation_enabled
-  encrypted                            = true
+  encrypted                            = false
   availability_zone                    = alltrue([var.availability_zone_relocation_enabled, var.availability_zone != null]) ? var.publicly_accessible : null
   default_iam_role_arn                 = try(data.aws_iam_role.default_role[0].arn, null)
   iam_roles                            = [for key in var.iam_role_names : data.aws_iam_role.roles[key].arn] 
-  
+
   timeouts {
     create = "10m"
     update = "20m"
