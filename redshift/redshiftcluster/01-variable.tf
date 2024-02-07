@@ -107,11 +107,13 @@ variable "availability_zone" {
 }
 
 variable "default_iam_role_name" {
+  description = "The IAM role name that was set as default for the cluster when the clsuter was created."
   type    = string
   default = null
 }
 
 variable "iam_role_names" {
+  description = "A list of IAM Role Names to associate with the cluster."
   type    = list(string)
   default = []
 }
