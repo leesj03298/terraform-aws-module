@@ -45,7 +45,6 @@ variable "transit_gateway" {
     vpn_ecmp_support                = optional(string, "enable")
     tags                            = optional(map(string), {})
   }))
-  default = []
   validation {
     condition     = alltrue([for object in var.transit_gateway : object.identifier != null])
     error_message = "identifier is a required field."
@@ -54,6 +53,7 @@ variable "transit_gateway" {
     condition     = alltrue([for object in var.transit_gateway : object.name_prefix != null])
     error_message = "name_prefix is a required field."
   }
+  default = []
 }
 
 variable "transit_gateway_attachment" {
