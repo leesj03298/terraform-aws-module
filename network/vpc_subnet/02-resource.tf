@@ -16,13 +16,12 @@ resource "aws_vpc" "default" {
 }
 
 locals {
-  vpc_id = { for key, vpc in aws_vpc.default : key => vpc.id if length(aws_vpc.default) != 0 }
+  vpc_id = merge({ for key, vpc in aws_vpc.default : key => vpc.id }, var.vpc_id)
 }
 
 ### AWS Internet Gateway #####################################################################################################################
 resource "aws_internet_gateway" "default" {
-  for_each = { for igw in var.vpcs : igw.identifier => igw
-  if alltrue([igw.igw_enable, length(aws_vpc.default) != 0]) }
+  for_each = { for igw in var.vpcs : igw.identifier => igw if alltrue([igw.igw_enable, length(aws_vpc.default) != 0]) }
   vpc_id = local.vpc_id[each.key]
   tags = merge(each.value.tags, {
     "Name" = join("-", ["igw", local.middle_name, each.value.name_prefix])
@@ -31,8 +30,7 @@ resource "aws_internet_gateway" "default" {
 
 ### AWS Subnet ###############################################################################################################################
 resource "aws_subnet" "default" {
-  for_each = { for sub in var.subnets : sub.identifier => sub
-  if length(aws_vpc.default) != 0 }
+  for_each = { for sub in var.subnets : sub.identifier => sub if length(aws_vpc.default) != 0 }
   vpc_id            = local.vpc_id[each.value.vpc_identifier]
   availability_zone = each.value.availability_zone
   cidr_block        = each.value.cidr_block
@@ -47,8 +45,7 @@ locals {
 
 ### AWS Route Table ##########################################################################################################################
 resource "aws_route_table" "default" {
-  for_each = { for rtb in var.route_tables : rtb.identifier => rtb
-  if length(aws_vpc.default) != 0 }
+  for_each = { for rtb in var.route_tables : rtb.identifier => rtb if length(aws_vpc.default) != 0 }
   vpc_id = local.vpc_id[each.value.vpc_identifier]
   tags = merge(each.value.tags, {
     "Name" = join("-", ["rtb", local.middle_name, each.value.name_prefix])
@@ -60,8 +57,7 @@ locals {
 
 ### AWS Route Table Assocation Subnet ########################################################################################################
 resource "aws_route_table_association" "default" {
-  for_each = { for sub in var.subnets : join("-", [sub.identifier, sub.route_table_identifier]) => sub
-  if length(aws_route_table.default) != 0 }
+  for_each = { for sub in var.subnets : join("-", [sub.identifier, sub.route_table_identifier]) => sub if length(aws_route_table.default) != 0 && sub.route_table_identifier != null }
   route_table_id = local.route_table_id[each.value.route_table_identifier]
   subnet_id      = local.subnet_id[each.value.identifier]
 }

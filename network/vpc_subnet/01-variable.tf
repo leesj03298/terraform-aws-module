@@ -4,12 +4,17 @@ variable "middle_name" {
   type        = string
 }
 
+variable "vpc_id" {
+  type = map(string)
+  default = {}
+}
+
 variable "vpcs" {
   description = "Create VPC or Internet Gateway"
   type = list(object({
-    identifier           = string
-    name_prefix          = string
-    cidr_block           = string
+    identifier           = optional(string, null)
+    name_prefix          = optional(string, null)
+    cidr_block           = optional(string, null)
     igw_enable           = optional(bool, false)
     enable_dns_hostnames = optional(bool, true)
     enable_dns_support   = optional(bool, true)
@@ -28,16 +33,18 @@ variable "vpcs" {
     condition     = alltrue([for vpc in var.vpcs : vpc.cidr_block != null])
     error_message = "cidr_block is a required field."
   }
+  default = []
+  
 }
 
 variable "subnets" {
   description = "Create Subnet"
   type = list(object({
-    vpc_identifier         = string
-    identifier             = string
-    name_prefix            = string
-    availability_zone      = string
-    cidr_block             = string
+    vpc_identifier         = optional(string, null)
+    identifier             = optional(string, null)
+    name_prefix            = optional(string, null)
+    availability_zone      = optional(string, null)
+    cidr_block             = optional(string, null)
     route_table_identifier = optional(string, null)
     tags                   = optional(map(string), null)
   }))
@@ -61,14 +68,24 @@ variable "subnets" {
     condition     = alltrue([for subnet in var.subnets : subnet.cidr_block != null])
     error_message = "cidr_block is a required field."
   }
+  default = []
 }
 
 variable "route_tables" {
   description = "Create RouteTable"
   type = list(object({
-    vpc_identifier = string
-    identifier     = string
-    name_prefix    = string
+    vpc_identifier = optional(string, null)
+    identifier     = optional(string, null)
+    name_prefix    = optional(string, null)
     tags           = optional(map(string), null)
   }))
+    validation {
+    condition     = alltrue([for route_table in var.route_tables : route_table.vpc_identifier != null])
+    error_message = "vpc_identifier is a required field."
+  }
+  validation {
+    condition     = alltrue([for route_table in var.route_tables : route_table.identifier != null])
+    error_message = "identifier is a required field."
+  }
+  default = []
 }
