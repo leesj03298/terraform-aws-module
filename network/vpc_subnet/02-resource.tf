@@ -26,6 +26,7 @@ resource "aws_internet_gateway" "default" {
   tags = merge({
     "Name" = join("-", ["igw", local.middle_name, each.value.name_prefix])
   }, each.value.tags)
+  depends_on = [ aws_vpc.default ]
 }
 
 ### AWS Subnet ###############################################################################################################################
