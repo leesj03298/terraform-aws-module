@@ -10,9 +10,10 @@ resource "aws_ec2_transit_gateway" "default" {
   multicast_support               = each.value.multicast_support
   transit_gateway_cidr_blocks     = each.value.transit_gateway_cidr_blocks
   vpn_ecmp_support                = each.value.vpn_ecmp_support
-  tags = merge(each.value.tags, {
+  tags = merge({
     "Name" = join("-", ["tgw", var.middle_name, each.value.name_prefix])
-  })
+    }, each.value.tags
+  )
 }
 
 locals {
@@ -29,7 +30,35 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "default" {
   appliance_mode_support                          = each.value.appliance_mode_support
   transit_gateway_default_route_table_association = each.value.transit_gateway_default_route_table_association
   transit_gateway_default_route_table_propagation = each.value.transit_gateway_default_route_table_propagation
-  tags = merge(each.value.tags,
-    { "Name" = join("-", ["tgwa", var.middle_name, each.value.name_prefix]) }
+  tags = merge({
+    "Name" = join("-", ["tgwa", var.middle_name, each.value.name_prefix])
+    }, each.value.tags
   )
+}
+
+resource "aws_ec2_transit_gateway_route_table" "default" {
+  for_each           = { for tgwr in var.transit_gateway_route_table : tgwr.identifier => tgwr }
+  transit_gateway_id = local.tgw_ids[each.value.transit_gateway_identifier]
+  tags = merge({
+    "Name" = join("-", ["tgwr", var.middle_name, each.value.name_prefix])
+    }, each.value.tags
+  )
+}
+
+locals {
+  tgwa_ids = { for key, value in aws_ec2_transit_gateway_vpc_attachment.default : key => value.id }
+  tgwr_ids = { for key, value in aws_ec2_transit_gateway_route_table.default : key => value.id }
+}
+
+resource "aws_ec2_transit_gateway_route_table_association" "default" {
+  for_each                       = { for tgwra in var.transit_gateway_route_table_association : tgwra.identifier => tgwra }
+  transit_gateway_attachment_id  = local.tgwa_ids[each.value.transit_gateway_attachment_identifier]
+  transit_gateway_route_table_id = local.tgwr_ids[each.value.transit_gateway_rotue_table_identifier]
+  replace_existing_association   = each.value.replace_existing_association
+}
+
+resource "aws_ec2_transit_gateway_route_table_propagation" "default" {
+  for_each                       = { for tgwra in var.transit_gateway_route_table_propagation : tgwra.identifier => tgwra }
+  transit_gateway_attachment_id  = local.tgwa_ids[each.value.transit_gateway_attachment_identifier]
+  transit_gateway_route_table_id = local.tgwr_ids[each.value.transit_gateway_rotue_table_identifier]
 }

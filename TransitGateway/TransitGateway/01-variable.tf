@@ -92,3 +92,76 @@ variable "transit_gateway_attachment" {
   }
   default = []
 }
+
+variable "transit_gateway_route_table" {
+  type = list(object({
+    identifier                 = optional(string, null)
+    name_prefix                = optional(string, null)
+    transit_gateway_identifier = optional(string, null)
+    tags                       = optional(map(string), {})
+  }))
+
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table : length(objects.identifier) != 0])
+    error_message = "Requrement : identifier"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table : length(objects.name_prefix) != 0])
+    error_message = "Requrement : name_prefix"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table : objects.transit_gateway_identifier != null])
+    error_message = "Requrement : transit_gateway_identifier"
+  }
+}
+
+variable "transit_gateway_route_table_association" {
+  type = list(object({
+    identifier                             = optional(string, null)
+    name_prefix                            = optional(string, null)
+    transit_gateway_attachment_identifier  = optional(string, null)
+    transit_gateway_rotue_table_identifier = optional(string, null)
+    replace_existing_association           = optional(bool, true)
+  }))
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_association : length(objects.identifier) != 0])
+    error_message = "Requrement : identifier"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_association : length(objects.name_prefix) != 0])
+    error_message = "Requrement : name_prefix"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_association : objects.transit_gateway_attachment_identifier != null])
+    error_message = "Requrement : transit_gateway_attachment_identifier"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_association : objects.transit_gateway_rotue_table_identifier != null])
+    error_message = "Requrement : transit_gateway_rotue_table_identifier"
+  }
+}
+
+variable "transit_gateway_route_table_propagation" {
+  type = list(object({
+    identifier                             = optional(string, null)
+    name_prefix                            = optional(string, null)
+    transit_gateway_attachment_identifier  = optional(string, null)
+    transit_gateway_rotue_table_identifier = optional(string, null)
+  }))
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_propagation : length(objects.identifier) != 0])
+    error_message = "Requrement : identifier"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_propagation : length(objects.name_prefix) != 0])
+    error_message = "Requrement : name_prefix"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_propagation : objects.transit_gateway_attachment_identifier != null])
+    error_message = "Requrement : transit_gateway_attachment_identifier"
+  }
+  validation {
+    condition     = alltrue([for objects in var.transit_gateway_route_table_propagation : objects.transit_gateway_rotue_table_identifier != null])
+    error_message = "Requrement : transit_gateway_rotue_table_identifier"
+  }
+}
