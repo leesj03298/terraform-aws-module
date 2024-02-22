@@ -10,9 +10,9 @@ resource "aws_vpc" "default" {
   enable_dns_hostnames = each.value.enable_dns_hostnames
   enable_dns_support   = each.value.enable_dns_support
   instance_tenancy     = each.value.instance_tenancy
-  tags = merge(each.value.tags, {
+  tags = merge({
     "Name" = join("-", ["vpc", local.middle_name, each.value.name_prefix])
-  })
+  }, each.value.tags)
 }
 
 locals {
@@ -23,9 +23,9 @@ locals {
 resource "aws_internet_gateway" "default" {
   for_each = { for igw in var.vpcs : igw.identifier => igw if alltrue([igw.igw_enable, length(aws_vpc.default) != 0]) }
   vpc_id = local.vpc_id[each.key]
-  tags = merge(each.value.tags, {
+  tags = merge({
     "Name" = join("-", ["igw", local.middle_name, each.value.name_prefix])
-  })
+  }, each.value.tags)
 }
 
 ### AWS Subnet ###############################################################################################################################
@@ -34,9 +34,9 @@ resource "aws_subnet" "default" {
   vpc_id            = local.vpc_id[each.value.vpc_identifier]
   availability_zone = each.value.availability_zone
   cidr_block        = each.value.cidr_block
-  tags = merge(each.value.tags, {
+  tags = merge({
     "Name" = join("-", ["sub", local.middle_name, each.value.name_prefix])
-  })
+  }, each.value.tags)
 }
 
 locals {
@@ -47,9 +47,9 @@ locals {
 resource "aws_route_table" "default" {
   for_each = { for rtb in var.route_tables : rtb.identifier => rtb if length(aws_vpc.default) != 0 }
   vpc_id = local.vpc_id[each.value.vpc_identifier]
-  tags = merge(each.value.tags, {
+  tags = merge({
     "Name" = join("-", ["rtb", local.middle_name, each.value.name_prefix])
-  })
+  }, each.value.tags)
 }
 locals {
   route_table_id = { for key, route_table in aws_route_table.default : key => route_table.id if length(aws_route_table.default) != 0 }
