@@ -44,8 +44,8 @@ resource "aws_ebs_volume" "default" {
 resource "aws_volume_attachment" "default" {
   for_each    = { for EBS_BLOCK_LIST in local.EBS_BLOCK_LIST : "${EBS_BLOCK_LIST.EC2_instance_identifier}_${EBS_BLOCK_LIST.ebs_block[0]}" => EBS_BLOCK_LIST }
   device_name = each.value.ebs_block[0]
-  volume_id   = aws_ebs_volume.default["${each.key}"].id
-  instance_id = aws_instance.default["${each.value.EC2_instance_identifier}"].id
+  volume_id   = aws_ebs_volume.default[each.key].id
+  instance_id = aws_instance.default[each.value.EC2_instance_identifier].id
 }
 
 #### EIP ########################################################################################################################
