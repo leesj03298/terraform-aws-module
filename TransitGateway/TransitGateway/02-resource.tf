@@ -51,14 +51,22 @@ locals {
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "default" {
-  for_each                       = { for tgwra in var.transit_gateway_route_table_association : tgwra.identifier => tgwra }
+  for_each                       = { for tgwra in var.transit_gateway_route_table_association : join("_", [tgwra.transit_gateway_rotue_table_identifier, tgwra.transit_gateway_attachment_identifier]) => tgwra }
   transit_gateway_attachment_id  = local.tgwa_ids[each.value.transit_gateway_attachment_identifier]
   transit_gateway_route_table_id = local.tgwr_ids[each.value.transit_gateway_rotue_table_identifier]
   replace_existing_association   = each.value.replace_existing_association
 }
 
 resource "aws_ec2_transit_gateway_route_table_propagation" "default" {
-  for_each                       = { for tgwra in var.transit_gateway_route_table_propagation : tgwra.identifier => tgwra }
+  for_each                       = { for tgwra in var.transit_gateway_route_table_propagation : join("_", [tgwra.transit_gateway_rotue_table_identifier, tgwra.transit_gateway_attachment_identifier]) => tgwra }
   transit_gateway_attachment_id  = local.tgwa_ids[each.value.transit_gateway_attachment_identifier]
   transit_gateway_route_table_id = local.tgwr_ids[each.value.transit_gateway_rotue_table_identifier]
+}
+
+resource "aws_ec2_transit_gateway_route" "default" {
+  for_each                       = { for tgwr in var.transit_gateway_route : join("_", [tgwr.transit_gateway_route_table_identifier, tgwr.destination_cidr_block]) => tgwr }
+  destination_cidr_block         = each.value.destination_cidr_block
+  transit_gateway_attachment_id  = local.tgwa_ids[each.value.transit_gateway_attachment_identifier]
+  blackhole                      = each.value.blackhole
+  transit_gateway_route_table_id = local.tgwr_ids[each.value.transit_gateway_route_table_identifier]
 }
