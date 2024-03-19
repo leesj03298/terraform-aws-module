@@ -4,11 +4,6 @@ variable "middle_name" {
   type        = string
 }
 
-variable "vpc_id" {
-  type = map(string)
-  default = {}
-}
-
 variable "vpcs" {
   description = "Create VPC or Internet Gateway"
   type = list(object({
