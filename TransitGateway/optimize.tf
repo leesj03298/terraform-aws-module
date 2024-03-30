@@ -1,5 +1,5 @@
 locals {
-  transit_gateway_route_table_association = distinct(compact(flatten(
+  transit_gateway_route_table_association = distinct(flatten(
     [for route_table in var.transit_gateway_route_table :
       [for association in route_table.transit_gateway_route_table_associations :
         {
@@ -10,9 +10,9 @@ locals {
         }
       ]
     ]
-  )))
+  ))
 
-  transit_gateway_route_table_propagation = distinct(compact(flatten(
+  transit_gateway_route_table_propagation = distinct(flatten(
     [for route_table in var.transit_gateway_route_table :
       [for propagation in route_table.transit_gateway_route_table_propagations :
         {
@@ -22,5 +22,5 @@ locals {
         }
       ]
     ]
-  )))
+  ))
 }

@@ -59,8 +59,6 @@ resource "aws_lb" "network_load_balancer" {
   )
 }
 
-
-
 resource "aws_lb_target_group" "default" {
   for_each    = { for tg in var.target_group : tg.identifier => tg if tg.identifier != null }
   name        = join("-", ["tg", var.middle_name, each.value.name_prefix])
@@ -74,6 +72,7 @@ resource "aws_lb_target_group" "default" {
     each.value.tags
   )
 }
+
 
 # resource "aws_lb_target_group_attachment" "this" {
 #   for_each = { for TARGET_GROUP_ATTACHMENT in local.TARGET_GROUP_ATTACHMENT_LIST : "${TARGET_GROUP_ATTACHMENT.target_group_attachment_identifier}" => TARGET_GROUP_ATTACHMENT
